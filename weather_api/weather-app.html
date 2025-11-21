@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather App</title>
+
+  <!-- INLINE CSS -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #74ebd5, #ACB6E5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      width: 350px;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input {
+      width: 80%;
+      padding: 10px;
+      border: 2px solid #74ebd5;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      background: #3cb4f9;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #4cb0a9;
+    }
+
+    .weather-card {
+      margin-top: 20px;
+      background: #f3f3f3;
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+    }
+
+    .error {
+      color: red;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1> 🌤️ Weather App</h1>
+
+    <input type="text" id="cityInput" placeholder="Enter city name" />
+    <br />
+    <button onclick="getWeather()">Search</button>
+
+    <div id="error" class="error"></div>
+
+    <div id="weatherInfo" class="weather-card" style="display:none;">
+      <h2><i>Weather Information</i></h2>
+      <h3 id="cityName"></h3>
+
+      <p><strong>Temperature:</strong> <span id="temperature"></span>°C</p>
+      <p><strong>Humidity:</strong> <span id="humidity"></span>%</p>
+      <p><strong>Description:</strong> <span id="description"></span></p>
+    </div>
+  </div>
+
+  <!-- INLINE JAVASCRIPT -->
+  <script>
+    async function getWeather() {
+      const city = document.getElementById("cityInput").value.trim();
+      const errorDiv = document.getElementById("error");
+      const weatherCard = document.getElementById("weatherInfo");
+
+      if (!city) {
+        errorDiv.textContent = "Please enter a city name.";
+        weatherCard.style.display = "none";
+        return;
+      }
+
+      const apiKey = "db5423a48c6061813f1f9da3fb309b22";
+      const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+      try {
+        const response = await fetch(apiUrl);
+
+        if (!response.ok) {
+          throw new Error("City not found");
+        }
+
+        const data = await response.json();
+
+        document.getElementById("cityName").textContent = data.name;
+        document.getElementById("temperature").textContent = data.main.temp.toFixed(1);
+        document.getElementById("humidity").textContent = data.main.humidity;
+        document.getElementById("description").textContent = data.weather[0].description;
+
+        weatherCard.style.display = "block";
+        errorDiv.textContent = "";
+      } catch (error) {
+        weatherCard.style.display = "none";
+        errorDiv.textContent = "City not found. Please try again.";
+      }
+    }
+  </script>
+
+</body>
+</html>
